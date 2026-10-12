@@ -10,6 +10,8 @@ function translateFirebaseError(code: string): string {
     'auth/user-disabled': 'La cuenta está deshabilitada.',
     'auth/user-not-found': 'No existe una cuenta con ese correo.',
     'auth/wrong-password': 'La contraseña es incorrecta.',
+    'auth/invalid-credential': 'El correo o la contraseña son incorrectos.',
+    'auth/operation-not-allowed': 'El inicio de sesión por correo y contraseña no está habilitado en Firebase.',
     'auth/email-already-in-use': 'Ya existe una cuenta con ese correo.',
     'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
     'auth/network-request-failed': 'No se pudo conectar a Firebase. Revisa la red.',
@@ -43,7 +45,8 @@ export function AuthScreen(): React.ReactElement {
       }
     } catch (caughtError) {
       const message = caughtError instanceof Error ? caughtError.message : 'Error al iniciar sesión';
-      const normalized = message.includes('auth/') ? translateFirebaseError(message.split('auth/')[1]?.split(')')[0] ?? 'auth/unknown') : message;
+      const firebaseErrorCode = message.match(/auth\/[a-z-]+/)?.[0];
+      const normalized = firebaseErrorCode ? translateFirebaseError(firebaseErrorCode) : message;
       setError(normalized);
       Alert.alert('Error', normalized);
     } finally {
