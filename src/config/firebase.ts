@@ -13,3 +13,4 @@ export const firebaseApp: FirebaseApp | null =
 
 export const auth: Auth | null = firebaseApp ? getAuth(firebaseApp) : null;
 export const db: Firestore | null = firebaseApp ? getFirestore(firebaseApp) : null;
+console.log('API Key cargada:', firebaseConfig.apiKey ? 'SÍ (' + firebaseConfig.apiKey.substring(0, 5) + '...)' : 'NO (VACÍA)');
