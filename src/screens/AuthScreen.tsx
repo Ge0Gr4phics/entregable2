@@ -3,6 +3,7 @@ import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleShee
 
 import { firebaseConfigured } from '../config/env';
 import { useAppContext } from '../context/AppContext';
+import { colors } from '../theme';
 
 function translateFirebaseError(code: string): string {
   const translations: Record<string, string> = {
@@ -101,7 +102,7 @@ export function AuthScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121826',
+    backgroundColor: colors.background,
   },
   content: {
     flexGrow: 1,
@@ -112,16 +113,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#f3f6fb',
+    color: colors.text,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 18,
-    color: '#8ea2c6',
+    color: colors.muted,
     marginBottom: 20,
   },
   input: {
-    backgroundColor: '#F3F7FF',
+    backgroundColor: colors.paper,
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 14,
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   primaryButton: {
-    backgroundColor: '#5B8DEF',
+    backgroundColor: colors.olive,
     minHeight: 48,
     borderRadius: 12,
     justifyContent: 'center',
@@ -147,23 +148,23 @@ const styles = StyleSheet.create({
   },
   switchText: {
     marginTop: 18,
-    color: '#92b1ff',
+    color: colors.accent,
     textAlign: 'center',
     fontSize: 15,
   },
   errorText: {
     marginBottom: 14,
-    color: '#ff9aa4',
+    color: colors.dangerLight,
     fontWeight: '600',
   },
   warningBox: {
-    backgroundColor: '#3b2f1e',
+    backgroundColor: '#4c4227',
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
   },
   warningText: {
-    color: '#f8d89f',
+    color: '#f4dda1',
     fontSize: 14,
   },
 });

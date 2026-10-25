@@ -19,6 +19,7 @@ export interface MediaDetail {
   title: string;
   year: string;
   posterPath: string | null;
+  backdropPath: string | null;
   overview: string;
   voteAverage: number;
   cast: Array<{ name: string; character: string }>;

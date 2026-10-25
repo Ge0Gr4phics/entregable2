@@ -10,20 +10,32 @@ import {
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { auth } from '../config/firebase';
-import { listUserItems, loadLocalList, mapMediaDetailToInput, saveLocalList, addToMyList, removeListItem, updateListItem } from '../services/myListService';
+import {
+  addToMyList,
+  listUserItems,
+  loadLocalList,
+  mapMediaDetailToInput,
+  removeListItem,
+  saveLocalList,
+  updateListItem,
+} from '../services/myListService';
 import { MyListInput, MyListItem } from '../types';
 
 interface AppContextValue {
   user: User | null;
   authReady: boolean;
   items: MyListItem[];
+  myList: MyListItem[]; // <--- Agregado para soportar myList en DetailScreen
   isOffline: boolean;
   loadingItems: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOutUser: () => Promise<void>;
   addToList: (item: MyListInput) => Promise<boolean>;
-  updateEntry: (itemId: string, changes: Partial<Omit<MyListItem, 'id' | 'tmdbId' | 'type' | 'title' | 'year' | 'posterPath' | 'agregadoEn'>>) => Promise<void>;
+  updateEntry: (
+    itemId: string,
+    changes: Partial<Omit<MyListItem, 'id' | 'tmdbId' | 'type' | 'title' | 'year' | 'posterPath' | 'agregadoEn'>>
+  ) => Promise<void>;
   removeFromList: (itemId: string) => Promise<void>;
   refreshList: () => Promise<void>;
 }
@@ -139,7 +151,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   async function updateEntry(
     itemId: string,
-    changes: Partial<Omit<MyListItem, 'id' | 'tmdbId' | 'type' | 'title' | 'year' | 'posterPath' | 'agregadoEn'>>,
+    changes: Partial<Omit<MyListItem, 'id' | 'tmdbId' | 'type' | 'title' | 'year' | 'posterPath' | 'agregadoEn'>>
   ): Promise<void> {
     if (!user) {
       return;
@@ -163,6 +175,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
       user,
       authReady,
       items,
+      myList: items, // <--- Se asigna `items` a `myList`
       isOffline,
       loadingItems,
       signIn,
@@ -173,7 +186,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
       removeFromList,
       refreshList,
     }),
-    [user, authReady, items, isOffline, loadingItems],
+    [user, authReady, items, isOffline, loadingItems]
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -50,12 +50,58 @@ function normalizeSearchResult(item: Record<string, unknown>): MediaSearchResult
   };
 }
 
+function normalizeTrendingResult(item: Record<string, unknown>): MediaSearchResult | null {
+  const mediaType = item.media_type;
+  if (mediaType !== 'movie' && mediaType !== 'tv') {
+    return null;
+  }
+
+  return normalizeSearchResult(item);
+}
+
 export function buildPosterUrl(posterPath: string | null, size = 'w342'): string | null {
   if (!posterPath) {
     return null;
   }
 
   return `https://image.tmdb.org/t/p/${size}${posterPath}`;
+}
+
+export async function getTrendingMedia(): Promise<MediaSearchResult[]> {
+  const response = await fetch(`${TMDB_BASE_URL}/trending/all/week?language=${TMDB_LANGUAGE}`, {
+    headers: createHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('No se pudieron cargar las tendencias.');
+  }
+
+  const json = (await response.json()) as { results?: Array<Record<string, unknown>> };
+  return (Array.isArray(json.results) ? json.results : [])
+    .map(normalizeTrendingResult)
+    .filter((item): item is MediaSearchResult => item !== null);
+}
+
+export async function getRandomMovie(): Promise<MediaSearchResult> {
+  const page = Math.floor(Math.random() * 500) + 1;
+  const response = await fetch(`${TMDB_BASE_URL}/movie/popular?language=${TMDB_LANGUAGE}&page=${page}`, {
+    headers: createHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error('No se pudo elegir una película aleatoria.');
+  }
+
+  const json = (await response.json()) as { results?: Array<Record<string, unknown>> };
+  const movies = (Array.isArray(json.results) ? json.results : [])
+    .map((item) => normalizeSearchResult({ ...item, media_type: 'movie' }))
+    .filter((item): item is MediaSearchResult => item !== null);
+
+  if (movies.length === 0) {
+    throw new Error('No se encontró una película para elegir.');
+  }
+
+  return movies[Math.floor(Math.random() * movies.length)];
 }
 
 export async function searchMediaByTitle(query: string): Promise<MediaSearchResult[]> {
@@ -120,6 +166,7 @@ export async function getMediaDetail(type: MediaType, tmdbId: number): Promise<M
     title,
     year,
     posterPath: typeof detail.poster_path === 'string' ? detail.poster_path : null,
+    backdropPath: typeof detail.backdrop_path === 'string' ? detail.backdrop_path : null,
     overview,
     voteAverage: typeof detail.vote_average === 'number' ? detail.vote_average : 0,
     cast: castItems,

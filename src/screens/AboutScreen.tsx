@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useAppContext } from '../context/AppContext';
+import { colors } from '../theme';
 
 export function AboutScreen(): React.ReactElement {
   const { signOutUser } = useAppContext();
@@ -15,7 +16,7 @@ export function AboutScreen(): React.ReactElement {
       </View>
 
       <Text style={styles.bodyText}>
-        This product uses the TMDB API but is not endorsed or certified by TMDB.
+        Esta aplicación utiliza la API de TMDB, pero no está respaldada ni certificada por TMDB.
       </Text>
 
       <Text style={styles.bodyText}>
@@ -33,12 +34,12 @@ export function AboutScreen(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: colors.background,
     padding: 20,
     justifyContent: 'center',
   },
   title: {
-    color: '#f3f6fb',
+    color: colors.text,
     fontSize: 28,
     fontWeight: '700',
     marginBottom: 20,
@@ -47,25 +48,25 @@ const styles = StyleSheet.create({
     width: 180,
     height: 64,
     borderRadius: 16,
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.oliveDark,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
   },
   logoText: {
-    color: '#fff',
+    color: colors.accent,
     fontWeight: '800',
     letterSpacing: 1,
     fontSize: 28,
   },
   bodyText: {
-    color: '#dfe7fb',
+    color: colors.muted,
     fontSize: 16,
     lineHeight: 24,
     marginBottom: 14,
   },
   button: {
-    backgroundColor: '#d9485f',
+    backgroundColor: colors.danger,
     minHeight: 48,
     borderRadius: 12,
     justifyContent: 'center',

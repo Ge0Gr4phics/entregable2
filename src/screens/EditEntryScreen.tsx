@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useAppContext } from '../context/AppContext';
 import { MyListStackParamList } from '../navigation/AppNavigator';
+import { colors } from '../theme';
 import { WatchStatus } from '../types';
 
 interface EditEntryScreenProps {
@@ -127,22 +128,22 @@ export function EditEntryScreen({ route, navigation }: EditEntryScreenProps): Re
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: colors.background,
     padding: 16,
   },
   title: {
-    color: '#f3f6fb',
+    color: colors.text,
     fontSize: 24,
     fontWeight: '700',
     marginBottom: 8,
   },
   heading: {
-    color: '#dfe7fb',
+    color: colors.muted,
     fontSize: 18,
     marginBottom: 12,
   },
   label: {
-    color: '#f3f6fb',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
@@ -154,7 +155,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   statusOption: {
-    backgroundColor: '#1d2940',
+    backgroundColor: colors.surface,
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -162,10 +163,10 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   statusOptionSelected: {
-    backgroundColor: '#5B8DEF',
+    backgroundColor: colors.olive,
   },
   statusOptionText: {
-    color: '#dfe7fb',
+    color: colors.muted,
     fontWeight: '600',
   },
   statusOptionTextSelected: {
@@ -179,35 +180,35 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 10,
-    backgroundColor: '#1d2940',
+    backgroundColor: colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
   },
   ratingButtonSelected: {
-    backgroundColor: '#f7b733',
+    backgroundColor: colors.accent,
   },
   ratingButtonText: {
-    color: '#dfe7fb',
+    color: colors.muted,
     fontWeight: '700',
   },
   ratingButtonTextSelected: {
-    color: '#1d2940',
+    color: colors.textDark,
   },
   commentInput: {
-    backgroundColor: '#eff4ff',
+    backgroundColor: colors.paper,
     borderRadius: 12,
     minHeight: 120,
     padding: 12,
     textAlignVertical: 'top',
   },
   commentCounter: {
-    color: '#bfd0f7',
+    color: colors.muted,
     textAlign: 'right',
     marginTop: 6,
   },
   saveButton: {
-    backgroundColor: '#2eb67d',
+    backgroundColor: colors.accent,
     borderRadius: 12,
     minHeight: 48,
     justifyContent: 'center',
@@ -215,11 +216,11 @@ const styles = StyleSheet.create({
     marginTop: 18,
   },
   saveButtonText: {
-    color: '#fff',
+    color: colors.textDark,
     fontWeight: '700',
   },
   deleteButton: {
-    backgroundColor: '#d9485f',
+    backgroundColor: colors.danger,
     borderRadius: 12,
     minHeight: 48,
     justifyContent: 'center',
@@ -227,11 +228,11 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   deleteButtonText: {
-    color: '#fff',
+    color: colors.paper,
     fontWeight: '700',
   },
   emptyText: {
-    color: '#dfe7fb',
+    color: colors.muted,
     fontSize: 16,
     textAlign: 'center',
     marginTop: 40,
