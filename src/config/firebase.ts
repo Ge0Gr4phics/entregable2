@@ -4,7 +4,7 @@ import { Firestore, getFirestore } from 'firebase/firestore';
 
 import { firebaseConfig } from './env';
 
-console.log('API Key cargada:', firebaseConfig.apiKey ? 'SÍ (' + firebaseConfig.apiKey.substring(0, 5) + '...)' : 'NO (VACÍA)');
+//console.log('API Key cargada:', firebaseConfig.apiKey ? 'SÍ (' + firebaseConfig.apiKey.substring(0, 5) + '...)' : 'NO (VACÍA)');
 
 export const firebaseApp: FirebaseApp | null =
   getApps().length > 0
