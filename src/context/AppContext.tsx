@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import {
   User,
@@ -7,11 +6,12 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { auth } from '../config/firebase';
 import {
   addToMyList,
+  clearLocalList,
   listUserItems,
   loadLocalList,
   mapMediaDetailToInput,
@@ -28,6 +28,7 @@ interface AppContextValue {
   myList: MyListItem[]; // <--- Agregado para soportar myList en DetailScreen
   isOffline: boolean;
   loadingItems: boolean;
+  listError: string | null;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOutUser: () => Promise<void>;
@@ -47,16 +48,21 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
   const [items, setItems] = useState<MyListItem[]>([]);
   const [loadingItems, setLoadingItems] = useState(false);
   const [isOffline, setIsOffline] = useState(false);
-  const [authReady, setAuthReady] = useState(false);
+  const [authReady, setAuthReady] = useState(auth === null);
+  const [listError, setListError] = useState<string | null>(null);
+  const listRequestId = useRef(0);
 
   useEffect(() => {
     if (!auth) {
-      setAuthReady(true);
       return;
     }
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      listRequestId.current += 1;
       setUser(firebaseUser);
+      setItems([]);
+      setLoadingItems(false);
+      setListError(null);
       setAuthReady(true);
     });
 
@@ -75,41 +81,71 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
+  const refreshList = useCallback(async (): Promise<void> => {
+    const requestId = ++listRequestId.current;
     if (!user) {
       setItems([]);
-      return;
-    }
-
-    void refreshList();
-  }, [user]);
-
-  async function refreshList(): Promise<void> {
-    if (!user) {
-      setItems([]);
+      setListError(null);
       return;
     }
 
     setLoadingItems(true);
+    setListError(null);
 
     try {
       const state = await NetInfo.fetch();
       if (!state.isConnected) {
-        const cached = await loadLocalList();
-        setItems(cached);
+        const cached = await loadLocalList(user.uid);
+        if (requestId === listRequestId.current) {
+          setItems(cached);
+        }
         return;
       }
 
       const remoteItems = await listUserItems(user.uid);
+      if (requestId !== listRequestId.current) {
+        return;
+      }
       setItems(remoteItems);
-      await saveLocalList(remoteItems);
-    } catch {
-      const cached = await loadLocalList();
-      setItems(cached);
+      await saveLocalList(user.uid, remoteItems);
+    } catch (error) {
+      if (requestId === listRequestId.current) {
+        try {
+          const cached = await loadLocalList(user.uid);
+          setItems(cached);
+        } catch (cacheError) {
+          setItems([]);
+          setListError(
+            `No se pudo sincronizar Mi lista ni leer la copia local. ${
+              cacheError instanceof Error ? cacheError.message : 'Error al leer la copia local.'
+            }`,
+          );
+          return;
+        }
+        setListError(
+          error instanceof Error
+            ? `No se pudo sincronizar Mi lista. ${error.message}`
+            : 'No se pudo sincronizar Mi lista. Revisa tu conexión e inténtalo de nuevo.',
+        );
+      }
     } finally {
-      setLoadingItems(false);
+      if (requestId === listRequestId.current) {
+        setLoadingItems(false);
+      }
     }
-  }
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      void refreshList();
+    }, 0);
+
+    return () => clearTimeout(timeout);
+  }, [user, refreshList]);
 
   async function signIn(email: string, password: string): Promise<void> {
     if (!auth) {
@@ -129,17 +165,20 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   async function signOutUser(): Promise<void> {
     if (!auth) {
-      return;
+      throw new Error('Firebase no está configurado. Añade la configuración en .env.');
     }
 
+    const userId = user?.uid;
     await signOut(auth);
-    await AsyncStorage.removeItem('mi_lista_cache_v1');
+    if (userId) {
+      await clearLocalList(userId);
+    }
     setItems([]);
   }
 
   async function addToList(item: MyListInput): Promise<boolean> {
     if (!user) {
-      return false;
+      throw new Error('Inicia sesión para agregar elementos a Mi lista.');
     }
 
     const added = await addToMyList(user.uid, item);
@@ -154,7 +193,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
     changes: Partial<Omit<MyListItem, 'id' | 'tmdbId' | 'type' | 'title' | 'year' | 'posterPath' | 'agregadoEn'>>
   ): Promise<void> {
     if (!user) {
-      return;
+      throw new Error('Inicia sesión para editar elementos de Mi lista.');
     }
 
     await updateListItem(user.uid, itemId, changes);
@@ -163,31 +202,29 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   async function removeFromList(itemId: string): Promise<void> {
     if (!user) {
-      return;
+      throw new Error('Inicia sesión para quitar elementos de Mi lista.');
     }
 
     await removeListItem(user.uid, itemId);
     await refreshList();
   }
 
-  const value = useMemo<AppContextValue>(
-    () => ({
-      user,
-      authReady,
-      items,
-      myList: items, // <--- Se asigna `items` a `myList`
-      isOffline,
-      loadingItems,
-      signIn,
-      signUp,
-      signOutUser,
-      addToList,
-      updateEntry,
-      removeFromList,
-      refreshList,
-    }),
-    [user, authReady, items, isOffline, loadingItems]
-  );
+  const value: AppContextValue = {
+    user,
+    authReady,
+    items,
+    myList: items,
+    isOffline,
+    loadingItems,
+    listError,
+    signIn,
+    signUp,
+    signOutUser,
+    addToList,
+    updateEntry,
+    removeFromList,
+    refreshList,
+  };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

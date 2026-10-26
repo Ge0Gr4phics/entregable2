@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,19 +16,10 @@ interface EditEntryScreenProps {
 export function EditEntryScreen({ route, navigation }: EditEntryScreenProps): React.ReactElement {
   const { items, updateEntry, removeFromList } = useAppContext();
   const item = items.find((currentItem) => currentItem.id === route.params.itemId) ?? null;
-  const [estado, setEstado] = useState<WatchStatus>('por_ver');
-  const [calificacion, setCalificacion] = useState<number | null>(null);
-  const [comentario, setComentario] = useState('');
-
-  useEffect(() => {
-    if (!item) {
-      return;
-    }
-
-    setEstado(item.estado);
-    setCalificacion(item.calificacion ?? null);
-    setComentario(item.comentario ?? '');
-  }, [item]);
+  const [estado, setEstado] = useState<WatchStatus>(item?.estado ?? 'por_ver');
+  const [calificacion, setCalificacion] = useState<number | null>(item?.calificacion ?? null);
+  const [comentario, setComentario] = useState(item?.comentario ?? '');
+  const [saving, setSaving] = useState(false);
 
   if (!item) {
     return (
@@ -39,17 +30,32 @@ export function EditEntryScreen({ route, navigation }: EditEntryScreenProps): Re
   }
 
   const handleSave = async (): Promise<void> => {
+    if (estado === 'vista' && calificacion === null) {
+      Alert.alert('Falta la calificación', 'Elige una calificación para marcar esta obra como vista.');
+      return;
+    }
+
+    setSaving(true);
     const normalizedComment = comentario.slice(0, 500);
     const nextCalificacion = estado === 'vista' ? calificacion : null;
 
-    await updateEntry(item.id, {
-      estado,
-      calificacion: nextCalificacion,
-      comentario: normalizedComment,
-    });
+    try {
+      await updateEntry(item.id, {
+        estado,
+        calificacion: nextCalificacion,
+        comentario: normalizedComment,
+      });
 
-    Alert.alert('Guardado', 'Tu entrada se actualizó correctamente.');
-    navigation.goBack();
+      Alert.alert('Guardado', 'Tu entrada se actualizó correctamente.');
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert(
+        'No se pudo guardar',
+        error instanceof Error ? error.message : 'Revisa tu conexión e inténtalo de nuevo.',
+      );
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleRemove = (): void => {
@@ -58,9 +64,16 @@ export function EditEntryScreen({ route, navigation }: EditEntryScreenProps): Re
       {
         text: 'Quitar',
         style: 'destructive',
-        onPress: () => {
-          void removeFromList(item.id);
-          navigation.goBack();
+        onPress: async () => {
+          try {
+            await removeFromList(item.id);
+            navigation.goBack();
+          } catch (error) {
+            Alert.alert(
+              'No se pudo quitar',
+              error instanceof Error ? error.message : 'Revisa tu conexión e inténtalo de nuevo.',
+            );
+          }
         },
       },
     ]);
@@ -114,8 +127,8 @@ export function EditEntryScreen({ route, navigation }: EditEntryScreenProps): Re
       />
       <Text style={styles.commentCounter}>{comentario.length}/500</Text>
 
-      <Pressable style={styles.saveButton} onPress={() => void handleSave()}>
-        <Text style={styles.saveButtonText}>Guardar cambios</Text>
+      <Pressable style={styles.saveButton} onPress={() => void handleSave()} disabled={saving}>
+        <Text style={styles.saveButtonText}>{saving ? 'Guardando...' : 'Guardar cambios'}</Text>
       </Pressable>
 
       <Pressable style={styles.deleteButton} onPress={handleRemove}>

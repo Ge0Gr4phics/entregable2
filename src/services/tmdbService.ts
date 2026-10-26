@@ -76,7 +76,7 @@ export async function getTrendingMedia(): Promise<MediaSearchResult[]> {
     throw new Error('No se pudieron cargar las tendencias.');
   }
 
-  const json = (await response.json()) as { results?: Array<Record<string, unknown>> };
+  const json = (await response.json()) as { results?: Record<string, unknown>[] };
   return (Array.isArray(json.results) ? json.results : [])
     .map(normalizeTrendingResult)
     .filter((item): item is MediaSearchResult => item !== null);
@@ -92,7 +92,7 @@ export async function getRandomMovie(): Promise<MediaSearchResult> {
     throw new Error('No se pudo elegir una película aleatoria.');
   }
 
-  const json = (await response.json()) as { results?: Array<Record<string, unknown>> };
+  const json = (await response.json()) as { results?: Record<string, unknown>[] };
   const movies = (Array.isArray(json.results) ? json.results : [])
     .map((item) => normalizeSearchResult({ ...item, media_type: 'movie' }))
     .filter((item): item is MediaSearchResult => item !== null);
@@ -124,7 +124,7 @@ export async function searchMediaByTitle(query: string): Promise<MediaSearchResu
     throw new Error('No se pudo completar la búsqueda.');
   }
 
-  const json = (await response.json()) as { results?: Array<Record<string, unknown>> };
+  const json = (await response.json()) as { results?: Record<string, unknown>[] };
   const results = Array.isArray(json.results) ? json.results : [];
 
   return results

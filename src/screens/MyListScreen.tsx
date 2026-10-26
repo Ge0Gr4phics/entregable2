@@ -12,14 +12,14 @@ interface MyListScreenProps {
   navigation: NativeStackNavigationProp<MyListStackParamList, 'MyList'>;
 }
 
-const watchStatuses: Array<{ label: string; value: 'all' | WatchStatus }> = [
+const watchStatuses: { label: string; value: 'all' | WatchStatus }[] = [
   { label: 'Todos', value: 'all' },
   { label: 'Por ver', value: 'por_ver' },
   { label: 'Viendo', value: 'viendo' },
   { label: 'Vista', value: 'vista' },
 ];
 
-const mediaTypes: Array<{ label: string; value: 'all' | MediaType }> = [
+const mediaTypes: { label: string; value: 'all' | MediaType }[] = [
   { label: 'Todo', value: 'all' },
   { label: 'Películas', value: 'movie' },
   { label: 'Series', value: 'tv' },
@@ -43,7 +43,7 @@ function ticketDate(value: string | null): { day: string; month: string; year: s
 }
 
 export function MyListScreen({ navigation }: MyListScreenProps): React.ReactElement {
-  const { items, removeFromList, isOffline } = useAppContext();
+  const { items, removeFromList, isOffline, listError } = useAppContext();
   const [stateFilter, setStateFilter] = useState<'all' | WatchStatus>('all');
   const [typeFilter, setTypeFilter] = useState<'all' | MediaType>('all');
 
@@ -63,8 +63,15 @@ export function MyListScreen({ navigation }: MyListScreenProps): React.ReactElem
       {
         text: 'Quitar',
         style: 'destructive',
-        onPress: () => {
-          void removeFromList(item.id);
+        onPress: async () => {
+          try {
+            await removeFromList(item.id);
+          } catch (error) {
+            Alert.alert(
+              'No se pudo quitar',
+              error instanceof Error ? error.message : 'Revisa tu conexión e inténtalo de nuevo.',
+            );
+          }
         },
       },
     ]);
@@ -75,6 +82,7 @@ export function MyListScreen({ navigation }: MyListScreenProps): React.ReactElem
       <Text style={styles.kicker}>TU COLECCIÓN PERSONAL</Text>
       <Text style={styles.header}>Mi lista</Text>
       {isOffline ? <Text style={styles.offlineBadge}>Sin conexión: mostrando la última copia local.</Text> : null}
+      {listError ? <Text style={styles.errorMessage}>{listError}</Text> : null}
 
       <View style={styles.filterRow}>
         {watchStatuses.map((option) => (
@@ -187,6 +195,13 @@ const styles = StyleSheet.create({
     color: '#f4dda1',
     borderRadius: 8,
     padding: 8,
+    marginBottom: 12,
+  },
+  errorMessage: {
+    color: '#ffd0c8',
+    backgroundColor: '#542d2c',
+    borderRadius: 8,
+    padding: 10,
     marginBottom: 12,
   },
   filterRow: {

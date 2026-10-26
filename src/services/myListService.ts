@@ -17,6 +17,10 @@ import { MediaDetail, MediaType, MyListInput, MyListItem, WatchStatus } from '..
 
 const LOCAL_CACHE_KEY = 'mi_lista_cache_v1';
 
+function localListCacheKey(userId: string): string {
+  return `${LOCAL_CACHE_KEY}_${userId}`;
+}
+
 export function buildItemId(type: MediaType, tmdbId: number): string {
   return `${type}_${tmdbId}`;
 }
@@ -52,12 +56,12 @@ function normalizeFirestoreItem(id: string, data: Record<string, unknown>): MyLi
   };
 }
 
-export async function saveLocalList(items: MyListItem[]): Promise<void> {
-  await AsyncStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify(items));
+export async function saveLocalList(userId: string, items: MyListItem[]): Promise<void> {
+  await AsyncStorage.setItem(localListCacheKey(userId), JSON.stringify(items));
 }
 
-export async function loadLocalList(): Promise<MyListItem[]> {
-  const raw = await AsyncStorage.getItem(LOCAL_CACHE_KEY);
+export async function loadLocalList(userId: string): Promise<MyListItem[]> {
+  const raw = await AsyncStorage.getItem(localListCacheKey(userId));
 
   if (!raw) {
     return [];
@@ -69,6 +73,10 @@ export async function loadLocalList(): Promise<MyListItem[]> {
   } catch {
     return [];
   }
+}
+
+export async function clearLocalList(userId: string): Promise<void> {
+  await AsyncStorage.multiRemove([localListCacheKey(userId), LOCAL_CACHE_KEY]);
 }
 
 export async function addToMyList(userId: string, media: MyListInput): Promise<boolean> {
@@ -102,7 +110,7 @@ export async function addToMyList(userId: string, media: MyListInput): Promise<b
 
 export async function listUserItems(userId: string): Promise<MyListItem[]> {
   if (!db) {
-    return [];
+    throw new Error('Firebase no está configurado.');
   }
 
   const itemsRef = collection(db, 'users', userId, 'mi_lista');
@@ -118,7 +126,7 @@ export async function updateListItem(
   updates: Partial<Omit<MyListItem, 'id' | 'tmdbId' | 'type' | 'title' | 'year' | 'posterPath' | 'agregadoEn'>>,
 ): Promise<void> {
   if (!db) {
-    return;
+    throw new Error('Firebase no está configurado.');
   }
 
   const reference = doc(db, 'users', userId, 'mi_lista', itemId);
@@ -130,7 +138,7 @@ export async function updateListItem(
 
 export async function removeListItem(userId: string, itemId: string): Promise<void> {
   if (!db) {
-    return;
+    throw new Error('Firebase no está configurado.');
   }
 
   const reference = doc(db, 'users', userId, 'mi_lista', itemId);

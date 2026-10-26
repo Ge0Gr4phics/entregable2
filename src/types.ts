@@ -22,7 +22,7 @@ export interface MediaDetail {
   backdropPath: string | null;
   overview: string;
   voteAverage: number;
-  cast: Array<{ name: string; character: string }>;
+  cast: { name: string; character: string }[];
 }
 
 export interface MyListItem {

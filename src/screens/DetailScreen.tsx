@@ -95,13 +95,20 @@ export function DetailScreen({ route }: DetailScreenProps): React.ReactElement {
       return;
     }
 
-    const added = await addToList(mapMediaDetailToInput(detail));
-    if (added) {
-      Alert.alert('Añadido', `${detail.title} se agregó a Mi lista.`);
-      return;
-    }
+    try {
+      const added = await addToList(mapMediaDetailToInput(detail));
+      if (added) {
+        Alert.alert('Añadido', `${detail.title} se agregó a Mi lista.`);
+        return;
+      }
 
-    Alert.alert('Duplicado', 'Esta obra ya existe en tu lista personal.');
+      Alert.alert('Duplicado', 'Esta obra ya existe en tu lista personal.');
+    } catch (error) {
+      Alert.alert(
+        'No se pudo agregar',
+        error instanceof Error ? error.message : 'Revisa tu conexión e inténtalo de nuevo.',
+      );
+    }
   };
 
   const posterUrl = detail ? buildPosterUrl(detail.posterPath, 'w500') : null;

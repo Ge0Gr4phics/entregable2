@@ -1,11 +1,67 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    function validListItem(data) {
+      return data.keys().hasAll([
+          'tmdbId',
+          'type',
+          'title',
+          'year',
+          'posterPath',
+          'estado',
+          'calificacion',
+          'comentario',
+          'agregadoEn',
+          'actualizadoEn'
+        ])
+        && data.keys().hasOnly([
+          'tmdbId',
+          'type',
+          'title',
+          'year',
+          'posterPath',
+          'estado',
+          'calificacion',
+          'comentario',
+          'agregadoEn',
+          'actualizadoEn'
+        ])
+        && data.tmdbId is int
+        && data.tmdbId > 0
+        && data.type in ['movie', 'tv']
+        && data.title is string
+        && data.title.size() > 0
+        && data.title.size() <= 200
+        && data.year is string
+        && data.year.size() <= 10
+        && (data.posterPath == null || data.posterPath is string)
+        && data.estado in ['por_ver', 'viendo', 'vista']
+        && (
+          data.calificacion == null
+          || (data.calificacion is int && data.calificacion >= 1 && data.calificacion <= 5)
+        )
+        && (data.estado == 'vista' || data.calificacion == null)
+        && data.comentario is string
+        && data.comentario.size() <= 500
+        && data.agregadoEn is timestamp
+        && data.actualizadoEn is timestamp;
+    }
+
     match /users/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read, write: if isOwner(uid);
 
       match /mi_lista/{itemId} {
-        allow read, write: if request.auth != null && request.auth.uid == uid;
+        allow read: if isOwner(uid);
+        allow create: if isOwner(uid) && validListItem(request.resource.data);
+        allow update: if isOwner(uid)
+          && validListItem(request.resource.data)
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['estado', 'calificacion', 'comentario', 'actualizadoEn']);
+        allow delete: if isOwner(uid);
       }
     }
   }

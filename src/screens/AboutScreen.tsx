@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useAppContext } from '../context/AppContext';
 import { colors } from '../theme';
@@ -7,8 +7,20 @@ import { colors } from '../theme';
 export function AboutScreen(): React.ReactElement {
   const { signOutUser } = useAppContext();
 
+  const handleSignOut = async (): Promise<void> => {
+    try {
+      await signOutUser();
+    } catch (error) {
+      Alert.alert(
+        'No se pudo cerrar la sesión',
+        error instanceof Error ? error.message : 'Inténtalo de nuevo.',
+      );
+    }
+  };
+
   return (
     <View style={styles.container}>
+      <Text style={styles.appName}>Mi Cartelera Personal</Text>
       <Text style={styles.title}>Acerca de</Text>
 
       <View style={styles.logoBox}>
@@ -16,7 +28,7 @@ export function AboutScreen(): React.ReactElement {
       </View>
 
       <Text style={styles.bodyText}>
-        Esta aplicación utiliza la API de TMDB, pero no está respaldada ni certificada por TMDB.
+        Esta aplicación utiliza la API de TMDB, pero no está respaldada, avalada ni certificada por TMDB.
       </Text>
 
       <Text style={styles.bodyText}>
@@ -24,7 +36,7 @@ export function AboutScreen(): React.ReactElement {
         estás viendo o ya has visto.
       </Text>
 
-      <Pressable style={styles.button} onPress={() => void signOutUser()}>
+      <Pressable style={styles.button} onPress={() => void handleSignOut()}>
         <Text style={styles.buttonText}>Cerrar sesión</Text>
       </Pressable>
     </View>
@@ -44,20 +56,27 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 20,
   },
+  appName: {
+    color: colors.accent,
+    fontSize: 27,
+    lineHeight: 33,
+    fontWeight: '800',
+    marginBottom: 8,
+  },
   logoBox: {
-    width: 180,
-    height: 64,
-    borderRadius: 16,
-    backgroundColor: colors.oliveDark,
+    width: 104,
+    height: 40,
+    borderRadius: 6,
+    backgroundColor: '#0d253f',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 16,
   },
   logoText: {
-    color: colors.accent,
+    color: '#01b4e4',
     fontWeight: '800',
-    letterSpacing: 1,
-    fontSize: 28,
+    letterSpacing: 2,
+    fontSize: 19,
   },
   bodyText: {
     color: colors.muted,
