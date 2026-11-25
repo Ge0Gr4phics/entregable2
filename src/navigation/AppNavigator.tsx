@@ -1,19 +1,20 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import React from "react";
+import { ActivityIndicator, View } from "react-native";
 
-import { AppIcon } from '../components/AppIcon';
-import { useAppContext } from '../context/AppContext';
-import { AboutScreen } from '../screens/AboutScreen';
-import { AuthScreen } from '../screens/AuthScreen';
-import { DetailScreen } from '../screens/DetailScreen';
-import { EditEntryScreen } from '../screens/EditEntryScreen';
-import { MyListScreen } from '../screens/MyListScreen';
-import { SearchScreen } from '../screens/SearchScreen';
-import { colors } from '../theme';
-import { MediaType } from '../types';
+import { AppIcon } from "../components/AppIcon";
+import { useAppContext } from "../context/AppContext";
+import { AboutScreen } from "../screens/AboutScreen";
+import { AuthScreen } from "../screens/AuthScreen";
+import { DetailScreen } from "../screens/DetailScreen";
+import { EditEntryScreen } from "../screens/EditEntryScreen";
+import { MyListScreen } from "../screens/MyListScreen";
+import { MyYearScreen } from "../screens/MyYearScreen";
+import { SearchScreen } from "../screens/SearchScreen";
+import { colors } from "../theme";
+import { MediaType } from "../types";
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -46,6 +47,7 @@ export type AboutStackParamList = {
 export type AppTabsParamList = {
   Inicio: undefined;
   MiLista: undefined;
+  MiAnio: undefined;
   Acerca: undefined;
 };
 
@@ -61,12 +63,20 @@ function SearchStackScreen(): React.ReactElement {
       screenOptions={{
         headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.text,
-        headerTitleStyle: { fontWeight: '700' },
+        headerTitleStyle: { fontWeight: "700" },
         contentStyle: { backgroundColor: colors.background },
       }}
     >
-      <SearchStack.Screen name="Search" component={SearchScreen} options={{ title: 'Cinemateca' }} />
-      <SearchStack.Screen name="Detail" component={DetailScreen} options={{ title: 'Detalle' }} />
+      <SearchStack.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{ title: "Cinemateca" }}
+      />
+      <SearchStack.Screen
+        name="Detail"
+        component={DetailScreen}
+        options={{ title: "Detalle" }}
+      />
     </SearchStack.Navigator>
   );
 }
@@ -77,13 +87,25 @@ function MyListStackScreen(): React.ReactElement {
       screenOptions={{
         headerStyle: { backgroundColor: colors.oliveDark },
         headerTintColor: colors.text,
-        headerTitleStyle: { fontWeight: '700' },
+        headerTitleStyle: { fontWeight: "700" },
         contentStyle: { backgroundColor: colors.oliveDark },
       }}
     >
-      <MyListStack.Screen name="MyList" component={MyListScreen} options={{ title: 'Mi lista' }} />
-      <MyListStack.Screen name="Detail" component={DetailScreen} options={{ title: 'Detalle' }} />
-      <MyListStack.Screen name="EditEntry" component={EditEntryScreen} options={{ title: 'Editar entrada' }} />
+      <MyListStack.Screen
+        name="MyList"
+        component={MyListScreen}
+        options={{ title: "Mi lista" }}
+      />
+      <MyListStack.Screen
+        name="Detail"
+        component={DetailScreen}
+        options={{ title: "Detalle" }}
+      />
+      <MyListStack.Screen
+        name="EditEntry"
+        component={EditEntryScreen}
+        options={{ title: "Editar entrada" }}
+      />
     </MyListStack.Navigator>
   );
 }
@@ -94,11 +116,15 @@ function AboutStackScreen(): React.ReactElement {
       screenOptions={{
         headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.text,
-        headerTitleStyle: { fontWeight: '700' },
+        headerTitleStyle: { fontWeight: "700" },
         contentStyle: { backgroundColor: colors.background },
       }}
     >
-      <AboutStack.Screen name="About" component={AboutScreen} options={{ title: 'Acerca de' }} />
+      <AboutStack.Screen
+        name="About"
+        component={AboutScreen}
+        options={{ title: "Acerca de" }}
+      />
     </AboutStack.Navigator>
   );
 }
@@ -110,29 +136,53 @@ function MainTabs(): React.ReactElement {
         headerShown: false,
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.muted,
-        tabBarStyle: { backgroundColor: colors.background, borderTopColor: colors.surfaceRaised, height: 62, paddingTop: 7, paddingBottom: 7 },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: '700' },
+        tabBarStyle: {
+          backgroundColor: colors.background,
+          borderTopColor: colors.surfaceRaised,
+          height: 62,
+          paddingTop: 7,
+          paddingBottom: 7,
+        },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "700" },
       }}
     >
       <Tab.Screen
         name="Inicio"
         component={SearchStackScreen}
-        options={{ tabBarIcon: ({ color, size }) => <AppIcon name="home" color={color} size={size} /> }}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <AppIcon name="home" color={color} size={size} />
+          ),
+        }}
       />
       <Tab.Screen
         name="MiLista"
         component={MyListStackScreen}
         options={{
-          title: 'Mi lista',
-          tabBarIcon: ({ color, size }) => <AppIcon name="ticket" color={color} size={size} />,
+          title: "Mi lista",
+          tabBarIcon: ({ color, size }) => (
+            <AppIcon name="ticket" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="MiAnio"
+        component={MyYearScreen}
+        options={{
+          title: "Mi año",
+          tabBarIcon: ({ color, size }) => (
+            <AppIcon name="ticket" color={color} size={size} />
+          ),
         }}
       />
       <Tab.Screen
         name="Acerca"
         component={AboutStackScreen}
         options={{
-          title: 'Acerca de',
-          tabBarIcon: ({ color, size }) => <AppIcon name="info" color={color} size={size} />,
+          title: "Acerca de",
+          tabBarIcon: ({ color, size }) => (
+            <AppIcon name="info" color={color} size={size} />
+          ),
         }}
       />
     </Tab.Navigator>
@@ -144,7 +194,7 @@ export function AppNavigator(): React.ReactElement {
 
   if (!authReady) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
       </View>
     );

@@ -1,9 +1,9 @@
-export type MediaType = 'movie' | 'tv';
-export type WatchStatus = 'por_ver' | 'viendo' | 'vista';
+export type MediaType = "movie" | "tv";
+export type WatchStatus = "por_ver" | "viendo" | "vista";
 
 export interface MediaSearchResult {
   id: number;
-  media_type: MediaType | 'person';
+  media_type: MediaType | "person";
   title?: string;
   name?: string;
   release_date?: string;
@@ -23,6 +23,9 @@ export interface MediaDetail {
   overview: string;
   voteAverage: number;
   cast: { name: string; character: string }[];
+  generos: string[];
+  duracionMin: number | null;
+  directores: string[];
 }
 
 export interface MyListItem {
@@ -36,6 +39,11 @@ export interface MyListItem {
   calificacion: number | null;
   comentario: string;
   agregadoEn: string | null;
+  actualizadoEn: string | null;
+  vistaEn: string | null;
+  generos: string[];
+  duracionMin: number | null;
+  directores: string[];
 }
 
 export interface MyListInput {
@@ -44,4 +52,7 @@ export interface MyListInput {
   title: string;
   year: string;
   posterPath: string | null;
+  generos: string[];
+  duracionMin: number | null;
+  directores: string[];
 }

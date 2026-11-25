@@ -1,8 +1,8 @@
-import React from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { useAppContext } from '../context/AppContext';
-import { colors } from '../theme';
+import { useAppContext } from "../context/AppContext";
+import { colors } from "../theme";
 
 export function AboutScreen(): React.ReactElement {
   const { signOutUser } = useAppContext();
@@ -12,8 +12,8 @@ export function AboutScreen(): React.ReactElement {
       await signOutUser();
     } catch (error) {
       Alert.alert(
-        'No se pudo cerrar la sesión',
-        error instanceof Error ? error.message : 'Inténtalo de nuevo.',
+        "No se pudo cerrar la sesión",
+        error instanceof Error ? error.message : "Inténtalo de nuevo.",
       );
     }
   };
@@ -28,12 +28,13 @@ export function AboutScreen(): React.ReactElement {
       </View>
 
       <Text style={styles.bodyText}>
-        Esta aplicación utiliza la API de TMDB, pero no está respaldada, avalada ni certificada por TMDB.
+        Esta aplicación utiliza la API de TMDB, pero no está respaldada, avalada
+        ni certificada por TMDB.
       </Text>
 
       <Text style={styles.bodyText}>
-        Mi Cartelera Personal es una aplicación para llevar el control de películas y series que quieres ver,
-        estás viendo o ya has visto.
+        Mi Cartelera Personal es una aplicación para llevar el control de
+        películas y series que quieres ver, estás viendo o ya has visto.
       </Text>
 
       <Pressable style={styles.button} onPress={() => void handleSignOut()}>
@@ -48,33 +49,33 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     padding: 20,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   title: {
     color: colors.text,
     fontSize: 28,
-    fontWeight: '700',
+    fontWeight: "700",
     marginBottom: 20,
   },
   appName: {
     color: colors.accent,
     fontSize: 27,
     lineHeight: 33,
-    fontWeight: '800',
+    fontWeight: "800",
     marginBottom: 8,
   },
   logoBox: {
     width: 104,
     height: 40,
     borderRadius: 6,
-    backgroundColor: '#0d253f',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: colors.tmdbNavy,
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 16,
   },
   logoText: {
-    color: '#01b4e4',
-    fontWeight: '800',
+    color: colors.tmdbBlue,
+    fontWeight: "800",
     letterSpacing: 2,
     fontSize: 19,
   },
@@ -88,13 +89,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.danger,
     minHeight: 48,
     borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 18,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: '700',
+    color: colors.white,
+    fontWeight: "700",
     fontSize: 16,
   },
 });

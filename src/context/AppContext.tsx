@@ -1,14 +1,21 @@
-import NetInfo from '@react-native-community/netinfo';
+import NetInfo from "@react-native-community/netinfo";
 import {
   User,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
-} from 'firebase/auth';
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+} from "firebase/auth";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
-import { auth } from '../config/firebase';
+import { auth } from "../config/firebase";
 import {
   addToMyList,
   clearLocalList,
@@ -18,8 +25,8 @@ import {
   removeListItem,
   saveLocalList,
   updateListItem,
-} from '../services/myListService';
-import { MyListInput, MyListItem } from '../types';
+} from "../services/myListService";
+import { MyListInput, MyListItem } from "../types";
 
 interface AppContextValue {
   user: User | null;
@@ -35,7 +42,18 @@ interface AppContextValue {
   addToList: (item: MyListInput) => Promise<boolean>;
   updateEntry: (
     itemId: string,
-    changes: Partial<Omit<MyListItem, 'id' | 'tmdbId' | 'type' | 'title' | 'year' | 'posterPath' | 'agregadoEn'>>
+    changes: Partial<
+      Omit<
+        MyListItem,
+        | "id"
+        | "tmdbId"
+        | "type"
+        | "title"
+        | "year"
+        | "posterPath"
+        | "agregadoEn"
+      >
+    >,
   ) => Promise<void>;
   removeFromList: (itemId: string) => Promise<void>;
   refreshList: () => Promise<void>;
@@ -43,7 +61,11 @@ interface AppContextValue {
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
-export function AppProvider({ children }: { children: React.ReactNode }): React.ReactElement {
+export function AppProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}): React.ReactElement {
   const [user, setUser] = useState<User | null>(null);
   const [items, setItems] = useState<MyListItem[]>([]);
   const [loadingItems, setLoadingItems] = useState(false);
@@ -117,7 +139,9 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
           setItems([]);
           setListError(
             `No se pudo sincronizar Mi lista ni leer la copia local. ${
-              cacheError instanceof Error ? cacheError.message : 'Error al leer la copia local.'
+              cacheError instanceof Error
+                ? cacheError.message
+                : "Error al leer la copia local."
             }`,
           );
           return;
@@ -125,7 +149,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
         setListError(
           error instanceof Error
             ? `No se pudo sincronizar Mi lista. ${error.message}`
-            : 'No se pudo sincronizar Mi lista. Revisa tu conexión e inténtalo de nuevo.',
+            : "No se pudo sincronizar Mi lista. Revisa tu conexión e inténtalo de nuevo.",
         );
       }
     } finally {
@@ -149,7 +173,9 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   async function signIn(email: string, password: string): Promise<void> {
     if (!auth) {
-      throw new Error('Firebase no está configurado. Añade la configuración en .env.');
+      throw new Error(
+        "Firebase no está configurado. Añade la configuración en .env.",
+      );
     }
 
     await signInWithEmailAndPassword(auth, email, password);
@@ -157,7 +183,9 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   async function signUp(email: string, password: string): Promise<void> {
     if (!auth) {
-      throw new Error('Firebase no está configurado. Añade la configuración en .env.');
+      throw new Error(
+        "Firebase no está configurado. Añade la configuración en .env.",
+      );
     }
 
     await createUserWithEmailAndPassword(auth, email, password);
@@ -165,7 +193,9 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   async function signOutUser(): Promise<void> {
     if (!auth) {
-      throw new Error('Firebase no está configurado. Añade la configuración en .env.');
+      throw new Error(
+        "Firebase no está configurado. Añade la configuración en .env.",
+      );
     }
 
     const userId = user?.uid;
@@ -178,7 +208,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   async function addToList(item: MyListInput): Promise<boolean> {
     if (!user) {
-      throw new Error('Inicia sesión para agregar elementos a Mi lista.');
+      throw new Error("Inicia sesión para agregar elementos a Mi lista.");
     }
 
     const added = await addToMyList(user.uid, item);
@@ -190,10 +220,21 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   async function updateEntry(
     itemId: string,
-    changes: Partial<Omit<MyListItem, 'id' | 'tmdbId' | 'type' | 'title' | 'year' | 'posterPath' | 'agregadoEn'>>
+    changes: Partial<
+      Omit<
+        MyListItem,
+        | "id"
+        | "tmdbId"
+        | "type"
+        | "title"
+        | "year"
+        | "posterPath"
+        | "agregadoEn"
+      >
+    >,
   ): Promise<void> {
     if (!user) {
-      throw new Error('Inicia sesión para editar elementos de Mi lista.');
+      throw new Error("Inicia sesión para editar elementos de Mi lista.");
     }
 
     await updateListItem(user.uid, itemId, changes);
@@ -202,7 +243,7 @@ export function AppProvider({ children }: { children: React.ReactNode }): React.
 
   async function removeFromList(itemId: string): Promise<void> {
     if (!user) {
-      throw new Error('Inicia sesión para quitar elementos de Mi lista.');
+      throw new Error("Inicia sesión para quitar elementos de Mi lista.");
     }
 
     await removeListItem(user.uid, itemId);
@@ -233,7 +274,7 @@ export function useAppContext(): AppContextValue {
   const context = useContext(AppContext);
 
   if (!context) {
-    throw new Error('useAppContext must be used within AppProvider');
+    throw new Error("useAppContext must be used within AppProvider");
   }
 
   return context;

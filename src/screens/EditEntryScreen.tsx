@@ -1,43 +1,62 @@
-import React, { useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useState } from "react";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
-import { useAppContext } from '../context/AppContext';
-import { MyListStackParamList } from '../navigation/AppNavigator';
-import { colors } from '../theme';
-import { WatchStatus } from '../types';
+import { useAppContext } from "../context/AppContext";
+import { MyListStackParamList } from "../navigation/AppNavigator";
+import { colors } from "../theme";
+import { WatchStatus } from "../types";
 
 interface EditEntryScreenProps {
-  route: RouteProp<MyListStackParamList, 'EditEntry'>;
-  navigation: NativeStackNavigationProp<MyListStackParamList, 'EditEntry'>;
+  route: RouteProp<MyListStackParamList, "EditEntry">;
+  navigation: NativeStackNavigationProp<MyListStackParamList, "EditEntry">;
 }
 
-export function EditEntryScreen({ route, navigation }: EditEntryScreenProps): React.ReactElement {
+export function EditEntryScreen({
+  route,
+  navigation,
+}: EditEntryScreenProps): React.ReactElement {
   const { items, updateEntry, removeFromList } = useAppContext();
-  const item = items.find((currentItem) => currentItem.id === route.params.itemId) ?? null;
-  const [estado, setEstado] = useState<WatchStatus>(item?.estado ?? 'por_ver');
-  const [calificacion, setCalificacion] = useState<number | null>(item?.calificacion ?? null);
-  const [comentario, setComentario] = useState(item?.comentario ?? '');
+  const item =
+    items.find((currentItem) => currentItem.id === route.params.itemId) ?? null;
+  const [estado, setEstado] = useState<WatchStatus>(item?.estado ?? "por_ver");
+  const [calificacion, setCalificacion] = useState<number | null>(
+    item?.calificacion ?? null,
+  );
+  const [comentario, setComentario] = useState(item?.comentario ?? "");
   const [saving, setSaving] = useState(false);
 
   if (!item) {
     return (
       <View style={styles.container}>
-        <Text style={styles.emptyText}>No se encontró la entrada para editar.</Text>
+        <Text style={styles.emptyText}>
+          No se encontró la entrada para editar.
+        </Text>
       </View>
     );
   }
 
   const handleSave = async (): Promise<void> => {
-    if (estado === 'vista' && calificacion === null) {
-      Alert.alert('Falta la calificación', 'Elige una calificación para marcar esta obra como vista.');
+    if (estado === "vista" && calificacion === null) {
+      Alert.alert(
+        "Falta la calificación",
+        "Elige una calificación para marcar esta obra como vista.",
+      );
       return;
     }
 
     setSaving(true);
     const normalizedComment = comentario.slice(0, 500);
-    const nextCalificacion = estado === 'vista' ? calificacion : null;
+    const nextCalificacion = estado === "vista" ? calificacion : null;
 
     try {
       await updateEntry(item.id, {
@@ -46,12 +65,14 @@ export function EditEntryScreen({ route, navigation }: EditEntryScreenProps): Re
         comentario: normalizedComment,
       });
 
-      Alert.alert('Guardado', 'Tu entrada se actualizó correctamente.');
+      Alert.alert("Guardado", "Tu entrada se actualizó correctamente.");
       navigation.goBack();
     } catch (error) {
       Alert.alert(
-        'No se pudo guardar',
-        error instanceof Error ? error.message : 'Revisa tu conexión e inténtalo de nuevo.',
+        "No se pudo guardar",
+        error instanceof Error
+          ? error.message
+          : "Revisa tu conexión e inténtalo de nuevo.",
       );
     } finally {
       setSaving(false);
@@ -59,19 +80,21 @@ export function EditEntryScreen({ route, navigation }: EditEntryScreenProps): Re
   };
 
   const handleRemove = (): void => {
-    Alert.alert('Confirmar', `¿Quieres quitar "${item.title}" de tu lista?`, [
-      { text: 'Cancelar', style: 'cancel' },
+    Alert.alert("Confirmar", `¿Quieres quitar "${item.title}" de tu lista?`, [
+      { text: "Cancelar", style: "cancel" },
       {
-        text: 'Quitar',
-        style: 'destructive',
+        text: "Quitar",
+        style: "destructive",
         onPress: async () => {
           try {
             await removeFromList(item.id);
             navigation.goBack();
           } catch (error) {
             Alert.alert(
-              'No se pudo quitar',
-              error instanceof Error ? error.message : 'Revisa tu conexión e inténtalo de nuevo.',
+              "No se pudo quitar",
+              error instanceof Error
+                ? error.message
+                : "Revisa tu conexión e inténtalo de nuevo.",
             );
           }
         },
@@ -86,30 +109,52 @@ export function EditEntryScreen({ route, navigation }: EditEntryScreenProps): Re
 
       <Text style={styles.label}>Estado</Text>
       <View style={styles.statusRow}>
-        {(['por_ver', 'viendo', 'vista'] as WatchStatus[]).map((option) => (
+        {(["por_ver", "viendo", "vista"] as WatchStatus[]).map((option) => (
           <Pressable
             key={option}
-            style={[styles.statusOption, estado === option && styles.statusOptionSelected]}
+            style={[
+              styles.statusOption,
+              estado === option && styles.statusOptionSelected,
+            ]}
             onPress={() => setEstado(option)}
           >
-            <Text style={[styles.statusOptionText, estado === option && styles.statusOptionTextSelected]}>
-              {option === 'por_ver' ? 'Por ver' : option === 'viendo' ? 'Viendo' : 'Vista'}
+            <Text
+              style={[
+                styles.statusOptionText,
+                estado === option && styles.statusOptionTextSelected,
+              ]}
+            >
+              {option === "por_ver"
+                ? "Por ver"
+                : option === "viendo"
+                  ? "Viendo"
+                  : "Vista"}
             </Text>
           </Pressable>
         ))}
       </View>
 
-      {estado === 'vista' ? (
+      {estado === "vista" ? (
         <>
           <Text style={styles.label}>Calificación</Text>
           <View style={styles.ratingRow}>
             {[1, 2, 3, 4, 5].map((value) => (
               <Pressable
                 key={value}
-                style={[styles.ratingButton, calificacion === value && styles.ratingButtonSelected]}
+                style={[
+                  styles.ratingButton,
+                  calificacion === value && styles.ratingButtonSelected,
+                ]}
                 onPress={() => setCalificacion(value)}
               >
-                <Text style={[styles.ratingButtonText, calificacion === value && styles.ratingButtonTextSelected]}>{value}</Text>
+                <Text
+                  style={[
+                    styles.ratingButtonText,
+                    calificacion === value && styles.ratingButtonTextSelected,
+                  ]}
+                >
+                  {value}
+                </Text>
               </Pressable>
             ))}
           </View>
@@ -127,8 +172,14 @@ export function EditEntryScreen({ route, navigation }: EditEntryScreenProps): Re
       />
       <Text style={styles.commentCounter}>{comentario.length}/500</Text>
 
-      <Pressable style={styles.saveButton} onPress={() => void handleSave()} disabled={saving}>
-        <Text style={styles.saveButtonText}>{saving ? 'Guardando...' : 'Guardar cambios'}</Text>
+      <Pressable
+        style={styles.saveButton}
+        onPress={() => void handleSave()}
+        disabled={saving}
+      >
+        <Text style={styles.saveButtonText}>
+          {saving ? "Guardando..." : "Guardar cambios"}
+        </Text>
       </Pressable>
 
       <Pressable style={styles.deleteButton} onPress={handleRemove}>
@@ -147,7 +198,7 @@ const styles = StyleSheet.create({
   title: {
     color: colors.text,
     fontSize: 24,
-    fontWeight: '700',
+    fontWeight: "700",
     marginBottom: 8,
   },
   heading: {
@@ -158,13 +209,13 @@ const styles = StyleSheet.create({
   label: {
     color: colors.text,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 8,
     marginTop: 12,
   },
   statusRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     marginBottom: 8,
   },
   statusOption: {
@@ -180,13 +231,13 @@ const styles = StyleSheet.create({
   },
   statusOptionText: {
     color: colors.muted,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   statusOptionTextSelected: {
-    color: '#fff',
+    color: colors.white,
   },
   ratingRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 8,
   },
   ratingButton: {
@@ -194,8 +245,8 @@ const styles = StyleSheet.create({
     height: 42,
     borderRadius: 10,
     backgroundColor: colors.surface,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 8,
   },
   ratingButtonSelected: {
@@ -203,7 +254,7 @@ const styles = StyleSheet.create({
   },
   ratingButtonText: {
     color: colors.muted,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   ratingButtonTextSelected: {
     color: colors.textDark,
@@ -213,41 +264,41 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     minHeight: 120,
     padding: 12,
-    textAlignVertical: 'top',
+    textAlignVertical: "top",
   },
   commentCounter: {
     color: colors.muted,
-    textAlign: 'right',
+    textAlign: "right",
     marginTop: 6,
   },
   saveButton: {
     backgroundColor: colors.accent,
     borderRadius: 12,
     minHeight: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 18,
   },
   saveButtonText: {
     color: colors.textDark,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   deleteButton: {
     backgroundColor: colors.danger,
     borderRadius: 12,
     minHeight: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 12,
   },
   deleteButtonText: {
     color: colors.paper,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   emptyText: {
     color: colors.muted,
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 40,
   },
 });

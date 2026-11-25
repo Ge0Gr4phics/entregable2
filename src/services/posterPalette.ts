@@ -1,4 +1,4 @@
-import { decode } from 'jpeg-js';
+import { decode } from "jpeg-js";
 
 export interface PosterPalette {
   dominant: string;
@@ -9,14 +9,16 @@ const MAX_CACHE_SIZE = 24;
 const MAX_SAMPLES = 1400;
 
 function toHex(value: number): string {
-  return Math.round(value).toString(16).padStart(2, '0');
+  return Math.round(value).toString(16).padStart(2, "0");
 }
 
 function colorToHex(red: number, green: number, blue: number): string {
   return `#${toHex(red)}${toHex(green)}${toHex(blue)}`;
 }
 
-export async function getPosterPalette(imageUrl: string): Promise<PosterPalette> {
+export async function getPosterPalette(
+  imageUrl: string,
+): Promise<PosterPalette> {
   const cachedPalette = paletteCache.get(imageUrl);
   if (cachedPalette) {
     return cachedPalette;
@@ -34,7 +36,10 @@ export async function getPosterPalette(imageUrl: string): Promise<PosterPalette>
     maxResolutionInMP: 1,
     maxMemoryUsageInMB: 32,
   });
-  const histogram = new Map<number, { count: number; red: number; green: number; blue: number }>();
+  const histogram = new Map<
+    number,
+    { count: number; red: number; green: number; blue: number }
+  >();
   const pixelCount = image.width * image.height;
   const sampleStride = Math.max(4, Math.ceil(pixelCount / MAX_SAMPLES) * 4);
 
@@ -62,13 +67,17 @@ export async function getPosterPalette(imageUrl: string): Promise<PosterPalette>
 
   const buckets = Array.from(histogram.values());
   if (buckets.length === 0) {
-    throw new Error('No se encontraron colores válidos en el póster.');
+    throw new Error("No se encontraron colores válidos en el póster.");
   }
 
   buckets.sort((first, second) => second.count - first.count);
   const dominant = buckets[0];
   const palette = {
-    dominant: colorToHex(dominant.red / dominant.count, dominant.green / dominant.count, dominant.blue / dominant.count),
+    dominant: colorToHex(
+      dominant.red / dominant.count,
+      dominant.green / dominant.count,
+      dominant.blue / dominant.count,
+    ),
   };
 
   if (paletteCache.size >= MAX_CACHE_SIZE) {
