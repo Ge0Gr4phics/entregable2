@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mi Cartelera - Brand Board</title>
+    <style>
+      body {
+        margin: 0;
+        background: #141811;
+        color: #f7f5ef;
+        font-family: system-ui, sans-serif;
+      }
+      main {
+        max-width: 900px;
+        margin: auto;
+        padding: 32px;
+      }
+      section {
+        margin: 28px 0;
+      }
+      .colors {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .swatch {
+        width: 130px;
+        height: 86px;
+        border-radius: 12px;
+        padding: 10px;
+        color: #f7f5ef;
+      }
+      .accent {
+        background: #d8c27b;
+        color: #282a24;
+      }
+      .surface {
+        background: #20271d;
+      }
+      .danger {
+        background: #a84139;
+      }
+      .phone {
+        width: 320px;
+        border: 10px solid #20271d;
+        border-radius: 28px;
+        padding: 16px;
+        background: #141811;
+      }
+      .card {
+        background: #20271d;
+        border-radius: 14px;
+        padding: 14px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>Mi Cartelera</h1>
+        <p>Mi año en cine · Brand board</p>
+      </section>
+      <section>
+        <h2>Marca</h2>
+        <strong>Mi Cartelera</strong>
+        <p>TMDB aparece como crédito secundario.</p>
+      </section>
+      <section>
+        <h2>Color</h2>
+        <div class="colors">
+          <div class="swatch accent">Acento<br />#d8c27b</div>
+          <div class="swatch surface">Superficie<br />#20271d</div>
+          <div class="swatch danger">Error<br />#a84139</div>
+        </div>
+      </section>
+      <section>
+        <h2>Tipografía y forma</h2>
+        <p>Fuente system; radios 12–16 px; objetivo táctil mínimo 44 px.</p>
+      </section>
+      <section>
+        <h2>Componentes</h2>
+        <p>
+          Tarjeta de dato, barras mensuales, obra destacada, selector de año y
+          estados vacíos.
+        </p>
+      </section>
+      <section>
+        <h2>Pantalla de ejemplo</h2>
+        <div class="phone">
+          <h3>Mi año en cine</h3>
+          <div class="card">Obras vistas · 24</div>
+          <div class="card">37,5 h · Género · Drama</div>
+        </div>
+      </section>
+      <section>
+        <h2>Voz</h2>
+        <p>
+          Vacío: “Aún no hay obras vistas en 2026”. Error: “No pudimos completar
+          el resumen”.
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

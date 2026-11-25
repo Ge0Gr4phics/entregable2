@@ -61,8 +61,10 @@ Aplicación móvil para descubrir películas y series con TMDB y administrar una
 ### Comprobaciones automáticas
 
 ```bash
+npm test
 npx tsc --noEmit
 npx expo lint
+npx prettier --write <archivos editados>
 ```
 
 Si Expo indica que no hay un linter configurado, registra esa limitación en la entrega en vez de asumir que el lint pasó.
@@ -83,14 +85,14 @@ Si Expo indica que no hay un linter configurado, registra esa limitación en la 
 
 Con dos cuentas de prueba distintas en un proyecto de Firebase no productivo, verifica en **Firestore → Rules playground** o con Firebase Emulator Suite:
 
-| Operación | Resultado esperado |
-|---|---|
-| Leer o crear elementos dentro del UID de la cuenta autenticada | Permitido si el documento cumple el esquema |
-| Leer, crear, editar o borrar elementos bajo el UID de otra cuenta | Denegado |
-| Crear un elemento con estado desconocido, tipo inválido, título vacío o comentario de más de 500 caracteres | Denegado |
-| Guardar una calificación fuera del rango 1–5 o para un elemento que no está marcado como visto | Denegado |
-| Cambiar durante una edición el ID de TMDB, el título o el tipo | Denegado |
-| Borrar un elemento propio | Permitido |
+| Operación                                                                                                   | Resultado esperado                          |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Leer o crear elementos dentro del UID de la cuenta autenticada                                              | Permitido si el documento cumple el esquema |
+| Leer, crear, editar o borrar elementos bajo el UID de otra cuenta                                           | Denegado                                    |
+| Crear un elemento con estado desconocido, tipo inválido, título vacío o comentario de más de 500 caracteres | Denegado                                    |
+| Guardar una calificación fuera del rango 1–5 o para un elemento que no está marcado como visto              | Denegado                                    |
+| Cambiar durante una edición el ID de TMDB, el título o el tipo                                              | Denegado                                    |
+| Borrar un elemento propio                                                                                   | Permitido                                   |
 
 Las reglas fuente están en [`firestore.rules`](./firestore.rules); la configuración para desplegarlas está en [`firebase.json`](./firebase.json). Publicar el archivo y realizar estas pruebas en el proyecto Firebase son pasos necesarios antes de afirmar que el aislamiento ya fue comprobado en producción.
 
