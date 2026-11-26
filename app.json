@@ -21,6 +21,9 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "experiments": {
+      "baseUrl": "/entregable2"
+    },
     "plugins": [
       "expo-status-bar"
     ]
