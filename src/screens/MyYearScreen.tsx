@@ -1,5 +1,5 @@
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -13,6 +13,7 @@ import { useAppContext } from "../context/AppContext";
 import { aniosDisponibles, resumenAnual } from "../dominio/resumenAnual";
 import { AppTabsParamList } from "../navigation/AppNavigator";
 import {
+  listUserItems,
   migrateMissingVistaEn,
   updateTMDBMetadata,
 } from "../services/myListService";
@@ -46,9 +47,31 @@ export function MyYearScreen(): React.ReactElement {
   const [loadingData, setLoadingData] = useState(false);
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [dataError, setDataError] = useState<string | null>(null);
+  const migratedUsers = useRef(new Set<string>());
+  const completedSignatures = useRef(new Set<string>());
+  const attemptedItems = useRef(new Set<string>());
 
   useEffect(() => {
     let active = true;
+    const migrationKey = user?.uid ?? "";
+    const signature = items
+      .filter((item) => {
+        if (item.estado !== "vista" || !item.vistaEn) return false;
+        return new Date(item.vistaEn).getFullYear() === selectedYear;
+      })
+      .map(
+        (item) =>
+          `${item.id}:${item.generos.length}:${item.duracionMin}:${item.directores.length}`,
+      )
+      .sort()
+      .join("|");
+    const preparationKey = `${migrationKey}:${selectedYear}:${signature}`;
+
+    if (completedSignatures.current.has(preparationKey)) {
+      return () => {
+        active = false;
+      };
+    }
 
     async function prepareData(): Promise<void> {
       if (!user || isOffline) {
@@ -59,19 +82,24 @@ export function MyYearScreen(): React.ReactElement {
       setDataError(null);
 
       try {
-        await migrateMissingVistaEn(user.uid);
-        await refreshList();
+        if (!migratedUsers.current.has(migrationKey)) {
+          await migrateMissingVistaEn(user.uid);
+          migratedUsers.current.add(migrationKey);
+          await refreshList();
+        }
 
-        const viewedInYear = items.filter((item) => {
+        const refreshedItems = await listUserItems(user.uid);
+        const viewedInYear = refreshedItems.filter((item) => {
           if (item.estado !== "vista" || !item.vistaEn) return false;
           return new Date(item.vistaEn).getFullYear() === selectedYear;
         });
 
         const missing = viewedInYear.filter(
           (item) =>
-            item.generos.length === 0 ||
-            (item.type === "movie" &&
-              (item.duracionMin === null || item.directores.length === 0)),
+            !attemptedItems.current.has(item.id) &&
+            (item.generos.length === 0 ||
+              (item.type === "movie" &&
+                (item.duracionMin === null || item.directores.length === 0))),
         );
 
         setProgress({ current: 0, total: missing.length });
@@ -79,6 +107,7 @@ export function MyYearScreen(): React.ReactElement {
         for (let index = 0; index < missing.length; index += 1) {
           if (!active) return;
           setProgress({ current: index + 1, total: missing.length });
+          attemptedItems.current.add(missing[index].id);
           try {
             const detail = await getMediaDetail(
               missing[index].type,
@@ -107,6 +136,7 @@ export function MyYearScreen(): React.ReactElement {
         }
       } finally {
         if (active) {
+          completedSignatures.current.add(preparationKey);
           setLoadingData(false);
           setProgress({ current: 0, total: 0 });
         }

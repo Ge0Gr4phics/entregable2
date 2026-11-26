@@ -28,3 +28,8 @@ Usar los tokens y componentes definidos en `DESIGN.md`.
 
 - D1-D13: tests de dominio, reglas y acciones manuales documentadas.
 - Contraste y área táctil: inspección del brand board y de la pantalla.
+
+## Comportamiento de preparación
+
+La migración y el enriquecimiento TMDB se ejecutan una sola vez por usuario y por obra durante la sesión.
+Si TMDB falla o no devuelve datos, la obra queda registrada como pendiente de datos sin repetir consultas de forma continua.
