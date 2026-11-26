@@ -11,6 +11,12 @@
 
 ## Cierre
 
-Fecha: 2026-11-24.
+Fecha de cierre: 2026-11-26.
 Se agregó dominio puro, campos nuevos, migración, enriquecimiento TMDB, pantalla anual y harness.
-Pendiente: completar prueba humana en teléfono y validar reglas en Firebase con dos cuentas.
+Las verificaciones automáticas pasan; los sensores están registrados en Vitest.
+
+## Riesgos pendientes
+
+- Completar la prueba humana en teléfono y registrar los resultados obtenidos.
+- Publicar las reglas y validar aislamiento y escrituras con dos cuentas.
+- Tomar las capturas solicitadas y demostrar la demo ensayada.

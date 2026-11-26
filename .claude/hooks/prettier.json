@@ -1,0 +1,5 @@
+{
+  "name": "prettier-format",
+  "command": "npx prettier --write",
+  "appliesTo": ["Write", "Edit"]
+}

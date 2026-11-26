@@ -23,3 +23,15 @@ DADO carga, vacío, error o desconexión; CUANDO ocurre; ENTONCES se muestra el 
 ## Definition of Done
 
 Código en `src/dominio/`, test asociado, spec, datos persistidos y prueba humana registrada.
+
+## Tickets
+
+| Ticket | Alcance                                   | Verificación                         | Estado       |
+| ------ | ----------------------------------------- | ------------------------------------ | ------------ |
+| MC-1   | Añadir `vistaEn` y controlar transiciones | Test D1 y revisión Firestore         | Implementado |
+| MC-2   | Migrar obras vistas antiguas              | Lectura de `actualizadoEn` una vez   | Implementado |
+| MC-3   | Completar datos TMDB de obras vistas      | Progreso por obra y manejo de fallos | Implementado |
+| MC-4   | Implementar resumen anual puro            | Tests D3-D11                         | Implementado |
+| MC-5   | Crear selector de años y estado vacío     | Prueba manual D4 y D12               | Implementado |
+| MC-6   | Mostrar estado offline                    | Prueba manual D13                    | Implementado |
+| MC-7   | Crear pantalla y componentes con tokens   | Lint de colores y prueba visual UI   | Implementado |

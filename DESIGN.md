@@ -6,6 +6,13 @@
 - El resumen debe sentirse como un cartel personal, no como un panel administrativo.
 - Conservar la navegación y los tokens existentes de Mi Cartelera.
 
+## Voz
+
+- Vacío: «Aún no hay obras vistas en 2026».
+- Error: «No pudimos completar el resumen».
+- Offline: «Sin conexión. Se muestra la copia guardada en este teléfono».
+- Éxito: «Tu entrada se actualizó correctamente».
+
 ## Tokens
 
 Los valores viven en `src/tema/index.ts`: colores, espacios, radios y tipografía.

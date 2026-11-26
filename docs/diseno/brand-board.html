@@ -53,6 +53,55 @@
         padding: 14px;
         margin-top: 10px;
       }
+      .palette {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 12px;
+      }
+      .token {
+        min-height: 96px;
+        border-radius: 12px;
+        padding: 12px;
+        background: #20271d;
+        border: 1px solid #2a3325;
+      }
+      .por-ver {
+        color: #b8b9ac;
+      }
+      .viendo {
+        color: #d8c27b;
+      }
+      .vista {
+        color: #66784a;
+      }
+      .scale {
+        display: grid;
+        gap: 8px;
+      }
+      .components {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+      }
+      .component {
+        min-height: 44px;
+        background: #20271d;
+        border-radius: 12px;
+        padding: 12px;
+      }
+      .bars {
+        display: flex;
+        height: 130px;
+        align-items: flex-end;
+        gap: 6px;
+        margin-top: 12px;
+      }
+      .bar {
+        flex: 1;
+        min-width: 8px;
+        background: #d8c27b;
+        border-radius: 5px 5px 0 0;
+      }
     </style>
   </head>
   <body>
@@ -67,30 +116,77 @@
         <p>TMDB aparece como crédito secundario.</p>
       </section>
       <section>
-        <h2>Color</h2>
+        <h2>Color y contraste</h2>
         <div class="colors">
           <div class="swatch accent">Acento<br />#d8c27b</div>
           <div class="swatch surface">Superficie<br />#20271d</div>
           <div class="swatch danger">Error<br />#a84139</div>
         </div>
+        <div class="palette">
+          <div class="token por-ver">Por ver · #b8b9ac</div>
+          <div class="token viendo">Viendo · #d8c27b</div>
+          <div class="token vista">Vista · #66784a</div>
+        </div>
+        <p>
+          Texto principal #f7f5ef sobre fondo #141811 supera 4,5:1. Texto oscuro
+          #282a24 sobre acento #d8c27b supera 4,5:1.
+        </p>
       </section>
       <section>
-        <h2>Tipografía y forma</h2>
-        <p>Fuente system; radios 12–16 px; objetivo táctil mínimo 44 px.</p>
+        <h2>Tipografía</h2>
+        <div class="scale">
+          <div style="font-size: 28px; font-weight: 800">
+            Título de pantalla · 28 px
+          </div>
+          <div style="font-size: 24px; font-weight: 700">Título · 24 px</div>
+          <div style="font-size: 16px">Cuerpo y etiqueta · 16 px</div>
+          <div style="font-size: 34px; font-weight: 900">
+            Dato numérico · 34 px
+          </div>
+        </div>
+        <p>
+          Fuente system por defecto. Espaciado 4/8/16/24/32 px; radios 12–16 px;
+          objetivo táctil mínimo 44 px.
+        </p>
       </section>
       <section>
         <h2>Componentes</h2>
-        <p>
-          Tarjeta de dato, barras mensuales, obra destacada, selector de año y
-          estados vacíos.
-        </p>
+        <div class="components">
+          <div class="component">Tarjeta de obra</div>
+          <div class="component">Selector de estado</div>
+          <div class="component">Estrellas de calificación</div>
+          <div class="component">Botón táctil</div>
+          <div class="component">Tarjeta de dato</div>
+          <div class="component">Tarjeta destacada</div>
+          <div class="component">Selector de año</div>
+          <div class="component">Estado vacío / carga / error</div>
+        </div>
       </section>
       <section>
         <h2>Pantalla de ejemplo</h2>
         <div class="phone">
           <h3>Mi año en cine</h3>
+          <div class="component">2025 · 2026</div>
           <div class="card">Obras vistas · 24</div>
           <div class="card">37,5 h · Género · Drama</div>
+          <div class="card">
+            Mes más activo
+            <div class="bars" aria-label="Barras por mes">
+              <span class="bar" style="height: 35%"></span>
+              <span class="bar" style="height: 20%"></span>
+              <span class="bar" style="height: 55%"></span>
+              <span class="bar" style="height: 80%"></span>
+              <span class="bar" style="height: 45%"></span>
+              <span class="bar" style="height: 65%"></span>
+              <span class="bar" style="height: 30%"></span>
+              <span class="bar" style="height: 50%"></span>
+              <span class="bar" style="height: 90%"></span>
+              <span class="bar" style="height: 60%"></span>
+              <span class="bar" style="height: 40%"></span>
+              <span class="bar" style="height: 75%"></span>
+            </div>
+          </div>
+          <div class="card">Obra destacada · Una película</div>
         </div>
       </section>
       <section>
